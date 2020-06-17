@@ -1,5 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server')
-const { argsToArgsConfig } = require('graphql/type/definition')
+const { v1: uuid } = require('uuid')
 
 let authors = [
     {
@@ -81,6 +81,19 @@ let books = [
 ]
 
 const typeDefs = gql`
+type Mutation {
+    addBook (
+       title: String!
+       author: String!
+       published: Int!
+       genres: [String!]! 
+    ) : Book,
+
+    editAuthor(
+        name: String!
+        setBornTo: Int!
+    ) : Author
+}
 
 type Book {
     title: String!
@@ -98,7 +111,7 @@ type Author {
   type Query {
       bookCount: Int!
       authorCount: Int!
-      allBooks(author: String): [Book!]!
+      allBooks(author: String, genre: String): [Book!]!
       allAuthors: [Author!]!
   }
 `
@@ -108,12 +121,20 @@ const resolvers = {
         bookCount: () => books.length,
         authorCount: () => authors.length,
         allBooks: (root, args) => {
-            if (!args.author) {
+            if (!args.author && !args.genre) {
                 return books
             }
-            let arr = []
-            books.filter(b => b.author === args.author ? arr.push(b) : null)
-            return arr
+            if (args.author) {
+                let arr = []
+                books.filter(b => b.author === args.author ? arr.push(b) : null)
+                return arr
+            }
+            if (args.genre) {
+                let arr = []
+                books.filter(b => b.genres.includes(args.genre) ? arr.push(b) : null)
+                return arr
+            }
+
         },
         allAuthors: () => authors
     },
@@ -121,6 +142,18 @@ const resolvers = {
         bookCount: (root) => {
             let count = books.filter(b => b.author === root.name)
             return count.length
+        }
+    },
+    Mutation: {
+        addBook: (root, args) => {
+            const book = { ...args, id: uuid() }
+            books = books.concat(book)
+            return book
+        },
+        editAuthor: (root, args) => {
+            let matchedAuthor = authors.find(a => a.name === args.name)
+            matchedAuthor.born = args.setBornTo
+            return matchedAuthor
         }
     }
 }
