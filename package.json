@@ -1,0 +1,15 @@
+{
+  "name": "library-backend",
+  "version": "1.0.0",
+  "description": "Full Stack Open library graphQL exercises",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.14.5",
+    "graphql": "^15.1.0"
+  }
+}
