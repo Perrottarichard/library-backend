@@ -4,13 +4,20 @@
   "description": "Full Stack Open library graphQL exercises",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^2.14.5",
+    "dotenv": "^8.2.0",
     "graphql": "^15.1.0",
+    "mongoose": "^5.9.19",
+    "mongoose-unique-validator": "^2.0.3",
     "uuid": "^8.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }
