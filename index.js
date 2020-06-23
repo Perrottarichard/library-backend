@@ -151,10 +151,15 @@ const resolvers = {
             }
             return book
         },
-        // addAuthor: async (root, args) => {
-        //     const author = new Author({ name: args.name })
-        //     return author.save()
-        // },
+        addAuthor: async (root, args) => {
+            const author = new Author({ name: args.name })
+            try {
+                await author.save()
+            } catch (error) {
+                console.log(error)
+            }
+            return author
+        },
         editAuthor: async (root, args) => {
             let matchedAuthor = await Author.findOne({ name: args.name })
             matchedAuthor.born = args.setBornTo
