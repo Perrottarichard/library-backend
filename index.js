@@ -80,11 +80,15 @@ type Author {
       allAuthors: [Author!]!
       hasAuthor(name: String!): Boolean!
       me: String!
+      filterByGenre(genre: String!): [Book!]!
   }
 `
 
 const resolvers = {
     Query: {
+        filterByGenre: (root, args) => {
+            return Book.find({ genres: { $in: [args.genre] } }).populate('author')
+        },
         me: (root, args, context) => context.currentUser,
         authorCount: () => Author.collection.countDocuments(),
         allBooks: (root, args) => {
@@ -97,9 +101,7 @@ const resolvers = {
                 return arr
             }
             if (args.genre) {
-                let arr = []
-                books.filter(b => b.genres.includes(args.genre) ? arr.push(b) : null)
-                return arr
+                return Book.find({ genres: $in[args.genre] }).populate('author')
             }
 
         },
