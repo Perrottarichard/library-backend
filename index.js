@@ -79,7 +79,7 @@ type Author {
       allBooks(author: String, genre: String): [Book!]!
       allAuthors: [Author!]!
       hasAuthor(name: String!): Boolean!
-      me: String!
+      me: User!
       filterByGenre(genre: String!): [Book!]!
   }
 `
@@ -89,7 +89,10 @@ const resolvers = {
         filterByGenre: (root, args) => {
             return Book.find({ genres: { $in: [args.genre] } }).populate('author')
         },
-        me: (root, args, context) => context.currentUser,
+        me: (root, args, context) => {
+            console.log(context.currentUser)
+            return context.currentUser
+        },
         authorCount: () => Author.collection.countDocuments(),
         allBooks: (root, args) => {
             if (!args.author && !args.genre) {
