@@ -55,11 +55,10 @@ type User {
     username: String!
     favoriteGenre: String!
     id: ID!
-  }
-  
-  type Token {
+}
+    type Token {
     value: String!
-  }
+}
   
 type Book {
     title: String!
@@ -74,7 +73,7 @@ type Author {
     born: Int
     bookCount: Int
 }
-  type Query {
+type Query {
       bookCount: Int!
       authorCount: Int!
       allBooks(author: String, genre: String): [Book!]!
@@ -150,13 +149,14 @@ const resolvers = {
             return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
         },
         addBook: async (root, args) => {
-            const book = new Book({ ...args })
+            let book = new Book({ ...args })
             try {
                 await book.save()
             } catch (error) {
                 throw new UserInputError(error.message, { invalidArgs: args })
             }
-            await pubsub.publish('BOOK_ADDED', { bookAdded: book })
+            book = await Book.findById(book.id).populate('author')
+            pubsub.publish('bookAdded', { bookAdded: book })
             return book
         },
         addAuthor: async (root, args) => {
@@ -176,7 +176,7 @@ const resolvers = {
     },
     Subscription: {
         bookAdded: {
-            subscribe: () => pubsub.asyncIterator([BOOK_ADDED])
+            subscribe: () => pubsub.asyncIterator('bookAdded')
         }
     }
 }
